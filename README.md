@@ -4,7 +4,7 @@ An office-supplies-based esoteric programming language.
 
 ## Structure
 
-A running Stape program consists of a tape, an instruction pointer (IP), some number of days pointers (DPs), and a buffer. The tape is a looping tape of cells, initialized by the program. The IP moves along it, auto-incrementing each instruction step. DPs also move along the tape, but only one of them is active at a time, and it can move in either direction at a program-defined speed, although by default they auto-decrement. The buffer is a transient floating memory cell, of the same type as those on the tape.
+A running Stape program consists of a tape, an instruction pointer (IP), some number of days pointers (DPs), and a buffer. The tape is a looping tape of cells, initialized by the program. The IP moves along it, auto-incrementing each instruction step. DPs also move along the tape, but only one of them is active at a time, and it can move in either direction at a program-defined speed, although by default they auto-decrement (inactive DPs remember their speed). The buffer is a transient floating memory cell, of the same type as those on the tape.
 
 ### Staples
 
@@ -25,7 +25,7 @@ Every stapled loop has exactly one DP. The active DP is the one in the same loop
 
 ### Program
 
-A valid Stape program is any string with all unescaped `[]` balanced. The escape character is `\`. Newlines and leading whitespace are ignored, unless they are escaped. Unlike in many other syntaxes, an escaped character which has no escaped meaning is ignored entirely, instead of treated as unescaped.
+A valid Stape program is any string with all unescaped `[]` balanced. The escape character is `\`. Newlines and leading whitespace characters are ignored, unless they are escaped. Unlike in many other syntaxes, an escaped character which has no escaped meaning is ignored entirely, instead of treated as unescaped.
 
 When the interpreter runs a Stape program, it first makes sure the program is valid, then it "staples" all loops recursively, starting from those with no subloops. It then treats the entire program as if it were enclosed in `[]`, and staples the ends into a loop, called the main loop. The IP starts at the `][` cell of the main loop.
 
@@ -75,12 +75,13 @@ Op|Type|Effect|Mnemonic
 `+`|Int|add the operand and the buffer (if the buffer is empty or not an integer, treat it as 0), and put the result in the buffer as a stapled base 10 number|+
 `*`|Int|same as `*`, except with multiplication|\*
 
-When an operator asks for an int, and gets a character aside from `0`-`9` or `-`, it silently fails. When it asks for an int and gets `-`, it takes that to be -1. When it asks for an int and gets a loop, all decimal digits inside of the loop are extracted (non-recursively), put in order, interpreted as a number, and then multiplied by -1 to the power of the number of `-`s inside the loop. If there are no digits inside the loop, the result is 0.
+When an operator asks for int and gets a valid character, it treats `0`-`9` as their respective numbers, and `-` as -1. When it asks for an int and gets a loop, all decimal digits inside of the loop are extracted (non-recursively), put in order, interpreted as a number, and then multiplied by -1 to the power of the number of `-`s inside the loop. If there are no digits inside the loop, the result is 0.
 
 ## Representation
 
 It is difficult to read a Stape program as a linear string, and difficult to tell which loop pointers are meant to be occupying. Generating ASCII art has its own set of difficulties. Therefore, I propose the following method of representation. The program
-```                                 v
+```
+                                 v
 [abcdefg[hij]klmnop[qrst[uvw]xyz[012345]6789]]
            '       '        '   '     '
 ```
@@ -92,9 +93,9 @@ becomes
        '
   1 [qrst[0]xyz[1]6789]
                 '
-      1.0 [uvw]
-          '   
-      1.1 [012345]
-           ^    '
+    1.0 [uvw]
+        '   
+    1.1 [012345]
+         ^    '
 ```
-For representations of program states in which the IP is in the same spot as a DP, the `"` character is recommended. For representations in both formatting and monospace, it is recommended to use highlighting to represent data pointers, nearly halving the size of the representation. 
+For representations of program states in which the IP is in the same spot as a DP, the `"` character is recommended. For representations in which both formatting and monospace are available, it is recommended to use highlighting to represent data pointers, nearly halving the size of the representation. 
