@@ -42,7 +42,7 @@ Name | Description
 -|Any cell (for nullary operations)
 Any|Any cell except `][` cells
 Loop|`[]` cells
-Character|Any cell except `][` and `[]` cells
+Char|Any cell except `][` and `[]` cells
 Int|`[]` cells, `0`-`9` cells, and `-` cells
 
 ### Operators
@@ -69,7 +69,7 @@ Op|Type|Effect|Mnemonic
 `V`|Any|replace the operand with the buffer, and clear the buffer; fails silently if the buffer is empty|XCV
 `I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer.|"in"
 `O`|Any|write the buffer to stdout, not including the outermost staples and not expanding any sub-loops, and clear the buffer|"out"
-`#`|Character|put the operand's ASCII value, stapled as a `0`-padded 3-digit base 10 number, into the buffer|keypad
+`#`|Char|put the operand's ASCII value, stapled as a `0`-padded 3-digit base 10 number, into the buffer|keypad
 `#`|Loop|read the operand as an integer and put the nicely-formatted (matching `/-?\d+/`) result  in the buffer|keypad
 `M`|Int|put the operand's corresponding ASCII character into the buffer|"letter"
 `+`|Int|add the operand and the buffer (if the buffer is empty or not an integer, treat it as 0), and put the result in the buffer as a stapled base 10 number|+
