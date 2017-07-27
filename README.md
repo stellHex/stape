@@ -56,12 +56,12 @@ Op|Type|Effect|Mnemonic
 `[]`|-|nop|staples
 `][`|-|nop|staples
 `:`|-|standard nop|staple holes
-`<`|Any|copy the operand to the buffer, staple a new loop between the operator and the operand (non-inclusive), and delete the operand's cell (as if it had been stapled over)|stapler
+`<`|Any|copy the operand to the buffer, staple a new loop between the operator and the operand (non-inclusive), and delete both cells (as if they had been stapled over)|stapler
 `>`|Any|Same as `>`, except the IP also moves into the resulting loop at its 0 cell|stapler
 `=`|Loop|move the IP into the operand, at its `][` cell|stack
 `_`|-|move the IP out of the current loop, appearing at the corresponding `[]` in the parent loop|stack
-`{`|Loop|unstaple the operand, adding a `:` at the end|unstapler
-`}`|-|unstaple the current loop, adding a `:` at the end|unstapler
+`{`|Loop|unstaple the operand, adding a `:` at each end|unstapler
+`}`|-|unstaple the current loop, adding a `:` at each end|unstapler
 `@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of stops equal to the operand|tape dispenser
 `%`|Int|set the speed of the DP (in cells/step) to the operand|date
 `C`|Any|copy the operand to the buffer|"copy"
