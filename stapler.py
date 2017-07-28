@@ -3,7 +3,6 @@ import re
 
 '''
 TODO:
-- add methods for a StapleRun to actually run (run.next, run.end)
 - add loop.format
 '''
 
@@ -11,6 +10,8 @@ class StapleRun(object):
 
    def __init__(self, program):
       self.parseIndex = 0
+      self.t = 0
+      self.done = False
       self.program = program
       self.miniprogram = program
       j=0
@@ -50,10 +51,25 @@ class StapleRun(object):
          except IndexError: break
          self.parseIndex+=1
          if char == u'⟦': loop.content.append(self.parse())
-         elif char != u'⟧': loop.content.append(char)
+         elif char != u'⟧': loop.content.append(str(char))
          else: break
       loop.adopt()
       return loop
+
+   def end(self):
+      self.done = True
+
+   def restart(self):
+      self.t = 0
+      self.parseIndex = 0
+      self.loop = self.main = self.parse()
+
+   def next(self, n = 1):
+      while n > 0 and not self.done:
+         self.loop[dpx] += self.loop.dpv
+         self.ipx += 1
+         self.loop.operate(self.loop[ipx])
+         n -= 1
 
 class Loop(object):
 
@@ -80,13 +96,31 @@ class Loop(object):
 
    def __str__(self): return self.format()
    def __repr__(self): return repr(self.content)
+   def format(self, prefix='', depth=0):
+      lineself = ' '*(depth*3-2) + '\033[35m' + prefix + '\033[0m'
+      if self.dpx == 0: lineself += '\033[7m[\033[0m'
+      else: lineself += '['
+      children = []
+      for i in range(1, len(self.content)):
+         cell = self.content[i]
+         ispointer = i == self.dpx
+         if ispointer: lineself += '\033[7m'
+         if type(cell) is str: lineself += cell
+         else:
+            lineself += '[\033[4m\033[53m{}\033[0m]'.format(len(children))
+            children.append(cell)
+         if ispointer: lineself += '\033[0m'
+      if self.dpx == 0: lineself += '\033[7m]\033[0m'
+      else: lineself += ']'
+      for i in range(len(children)):
+         lineself += '\n'+children[i].format(str(i)+' ', depth+1)
+      return lineself
+
 
    def __getitem__(self, key):
       return self.content[key%len(self.content)]
-
    def adopt(self):
       for cell in self.content:
-         print type(cell) is Loop, cell
          if type(cell) is Loop:
             cell.parent = self
 
@@ -173,7 +207,6 @@ class Loop(object):
          run.buffer = Loop(Loop.fromInt(intarg + Loop.toInt(run.buffer)), run)
       elif '*' == op:
          run.buffer = Loop(Loop.fromInt(intarg * Loop.toInt(run.buffer)), run)
-         #'''
 
    @staticmethod
    def toInt(cell):
@@ -194,3 +227,7 @@ class Loop(object):
    @staticmethod
    def fromInt(num):
       return list(str(int(num)))
+
+r = StapleRun('a[b[c]d][]e')
+print r.main
+q = quit
