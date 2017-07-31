@@ -64,16 +64,17 @@ Op|Type|Effect|Mnemonic
 `}`|-|unstaple the current loop, adding a `:` at each end|unstapler
 `@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of stops equal to the operand|tape dispenser
 `%`|Int|set the speed of the DP (in cells/step) to the operand|date
+`I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer.|"in"
+`O`|Any|write the buffer to stdout, not including the outermost staples and not expanding any sub-loops, and clear the buffer|"out"
 `C`|Any|copy the operand to the buffer|"copy"
 `X`|Any|copy the operand to the buffer and replace it on the tape with `:`|scissors
 `V`|Any|replace the operand with the buffer, and clear the buffer; fails silently if the buffer is empty|XCV
-`I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer.|"in"
-`O`|Any|write the buffer to stdout, not including the outermost staples and not expanding any sub-loops, and clear the buffer|"out"
 `#`|Char|put the operand's ASCII value, stapled as a `0`-padded 3-digit base 10 number, into the buffer|keypad
 `#`|Loop|read the operand as an integer and put the nicely-formatted (matching `/-?\d+/`) result  in the buffer|keypad
 `M`|Int|put the operand's corresponding ASCII character into the buffer|"letter"
 `+`|Int|add the operand and the buffer (if the buffer is empty or not an integer, treat it as 0), and put the result in the buffer as a stapled base 10 number|+
 `*`|Int|same as `*`, except with multiplication|\*
+`&`|Loop|Concatenates the argument to the buffer; silently fails if the buffer is not a loop|\*
 
 When an operator asks for int and gets a valid character, it treats `0`-`9` as their respective numbers, and `-` as -1. When it asks for an int and gets a loop, all decimal digits inside of the loop are extracted (non-recursively), put in order, interpreted as a number, and then multiplied by -1 to the power of the number of `-`s inside the loop. If there are no digits inside the loop, the result is 0.
 
