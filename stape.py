@@ -33,7 +33,7 @@ def gooey(run, interactive=False):
         while(True):
             run.next(cycles)
             if run.done: break
-            if raw_input(str(cycles*2) + ' cycles elapsed. Keep trying? (Y/n): ') not in 'Yy': break
+            if raw_input('\n' + str(cycles*2) + ' cycles elapsed. Keep trying? (Y/n): ') not in 'Yy': break
             cycles *= 2
         return
     delay = 0.5
@@ -66,6 +66,7 @@ def gooey(run, interactive=False):
             while val > 0 and t > 0:
                 clear()
                 run.next(1)
+                print('Output:', run.output)
                 print('Buffer:', run.buffer)
                 print(run.main)
                 if run.done: break
@@ -92,6 +93,6 @@ def stapleFromFile(path):
 
 try:
     theRun = stapleFromFile(sys.argv[1])
-    gooey(theRun, sys.flags.interactive)
+    if theRun is not None: gooey(theRun, sys.flags.interactive)
 except IndexError: 
     if not sys.flags.interactive: print('No file specified!')

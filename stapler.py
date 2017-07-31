@@ -8,8 +8,12 @@ class StapeRun(object):
         self.parseIndex = 0
         self.t = 0
         self.done = False
+        self.output = ''
+        self.ipx = 0
+        self.buffer = None
         self.program = program
         self.miniprogram = program
+
         j=0
         for reg, rep in [
             [r'\\\\', u'∖'],       #start escaping \
@@ -28,8 +32,7 @@ class StapeRun(object):
             try: self.miniprogram = re.sub(reg, rep, self.miniprogram)
             except: print(reg, rep, j)
             j+=1
-        self.ipx = 0
-        self.buffer = None
+
         validator0, validator1 = self.miniprogram, None
         while validator0 != validator1:
             validator1 = validator0
@@ -56,6 +59,10 @@ class StapeRun(object):
 
     def restart(self):
         self.t = 0
+        self.ipx = 0
+        self.output = ''
+        self.buffer = None
+        self.done = False
         self.parseIndex = 0
         self.loop = self.main = self.parse()
 
@@ -94,14 +101,14 @@ class Loop(object):
         run = self.run
         lineself = ' '*(depth*3-2) + '\033[35m' + prefix + '\033[0m'
         if self.dpx%len(self.content) == 0: lineself += '\033[7m'
-        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[1m'
+        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[41;1m'
         lineself += '[\033[0m'
         children = []
         for i in range(1, len(self.content)):
             cell = self.content[i]
             isIP = i == run.ipx%len(self.content) and run.loop is self
             isDP = i == self.dpx%len(self.content)
-            if isIP: lineself += '\033[1m \b'
+            if isIP: lineself += '\033[41;1m \b'
             if isDP: lineself += '\033[7m'
             if type(cell) is str: lineself += cell
             else:
@@ -109,7 +116,7 @@ class Loop(object):
                 children.append(cell)
             if isDP or isIP: lineself += '\033[0m'
         if self.dpx%len(self.content) == 0: lineself += '\033[7m'
-        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[1m'
+        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[41;1m'
         lineself += ']\033[0m'
         for i in range(len(children)):
             lineself += '\n'+children[i].format(str(i)+' ', depth+1)
@@ -202,6 +209,7 @@ class Loop(object):
                 for cell in run.buffer.content:
                     if type(cell) is str: s += cell
             else: s = run.buffer
+            run.output += s
             print(s, end='')
             run.buffer = None
         elif '#' == op and type(arg) is Loop:
@@ -234,6 +242,8 @@ class Loop(object):
             return result*neg
         elif cell is None:
             return 0
+        if type(cell) is tuple:
+            return None
         else:
             raise RuntimeError('Invalid cell "{}" of type "{}"'.format(str(cell),type(cell).__name__))
 
