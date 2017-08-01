@@ -36,7 +36,7 @@ def gooey(run, interactive=False):
             if raw_input('\n' + str(cycles*2) + ' cycles elapsed. Keep trying? (Y/n): ') not in 'Yy': break
             cycles *= 2
         return
-    delay = 0.5
+    delay = 0.1
     maxim = 1024
     repeat = 1
     clear()

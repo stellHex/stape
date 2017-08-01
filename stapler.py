@@ -9,7 +9,7 @@ class StapeRun(object):
         self.t = 0
         self.done = False
         self.output = ''
-        self.ipx = 0
+        self._ipx = 0
         self.buffer = None
         self.program = program
         self.miniprogram = program
@@ -40,6 +40,19 @@ class StapeRun(object):
         if re.search(u'⟧|⟦', validator0):
             raise RuntimeError(u'Invalid program {}; mismatched []!'.format(self.miniprogram))
         self.loop = self.main = self.parse()
+
+
+    @property
+    def ipx(self):
+        return self._ipx
+    @ipx.setter
+    def ipx(self, val):
+        print(val, len(self.loop.content), end = ' ')
+        self._ipx = val % len(self.loop.content)
+        print(self.ipx)
+    @ipx.deleter
+    def ipx(self):
+        del self._ipx
 
     def parse(self):
         program = self.miniprogram
@@ -76,7 +89,7 @@ class StapeRun(object):
 class Loop(object):
 
     def __init__(self, content, run, parent=None):
-        self.dpx = 0
+        self._dpx = 0
         self.dpv = -1
         self.content = [None] + content
         self.run = run
@@ -95,19 +108,29 @@ class Loop(object):
     def parent(self):
         self.parent = None
 
+    @property
+    def dpx(self):
+        return self._dpx
+    @dpx.setter
+    def dpx(self, val):
+        self._dpx = val % len(self.content)
+    @dpx.deleter
+    def dpx(self):
+        del self._dpx
+
     def __str__(self): return self.format()
     def __repr__(self): return repr(self.content)
     def format(self, prefix='', depth=0):
         run = self.run
         lineself = ' '*(depth*3-2) + '\033[35m' + prefix + '\033[0m'
-        if self.dpx%len(self.content) == 0: lineself += '\033[7m'
-        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[41;1m'
+        if self.dpx == 0: lineself += '\033[7m'
+        if self.dpx == 0 and run.loop is self: lineself += '\033[41;1m'
         lineself += '[\033[0m'
         children = []
         for i in range(1, len(self.content)):
             cell = self.content[i]
-            isIP = i == run.ipx%len(self.content) and run.loop is self
-            isDP = i == self.dpx%len(self.content)
+            isIP = i == run.ipx and run.loop is self
+            isDP = i == self.dpx
             if isIP: lineself += '\033[41;1m \b'
             if isDP: lineself += '\033[7m'
             if type(cell) is str: lineself += cell
@@ -115,8 +138,8 @@ class Loop(object):
                 lineself += '[\033[35m{}\033[39m]'.format(len(children))
                 children.append(cell)
             if isDP or isIP: lineself += '\033[0m'
-        if self.dpx%len(self.content) == 0: lineself += '\033[7m'
-        if self.dpx%len(self.content) == 0 and run.loop is self: lineself += '\033[41;1m'
+        if self.dpx == 0: lineself += '\033[7m'
+        if self.dpx == 0 and run.loop is self: lineself += '\033[41;1m'
         lineself += ']\033[0m'
         for i in range(len(children)):
             lineself += '\n'+children[i].format(str(i)+' ', depth+1)
