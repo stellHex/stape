@@ -10,6 +10,7 @@ class StapeRun(object):
         self.done = False
         self.output = ''
         self._ipx = 0
+        self.flipped = 1
         self.buffer = None
         self.program = program
         self.miniprogram = program
@@ -47,9 +48,7 @@ class StapeRun(object):
         return self._ipx
     @ipx.setter
     def ipx(self, val):
-        print(val, len(self.loop.content), end = ' ')
         self._ipx = val % len(self.loop.content)
-        print(self.ipx)
     @ipx.deleter
     def ipx(self):
         del self._ipx
@@ -81,8 +80,8 @@ class StapeRun(object):
 
     def next(self, n = 1):
         while n > 0 and not self.done:
-            self.loop.dpx += self.loop.dpv
-            self.ipx += 1
+            self.loop.dpx += self.loop.dpv*self.flipped
+            self.ipx += self.flipped
             self.loop.operate(self.loop[self.ipx])
             n -= 1
 
@@ -207,9 +206,25 @@ class Loop(object):
             if intarg is not None:
                 run.ipx += intarg
                 self.dpx += intarg
+        elif '&' == op:
+            run.flipped = -run.flipped
         elif '%' == op:
             if intarg is not None:
                 self.dpv = intarg
+        elif '~' == op:
+            self.dpx, run.ipx = run.ipx, self.dpx
+        elif 'L' == op:
+            if arg == run.buffer: return
+            if type(run.buffer) is Loop and type(arg) is Loop and len(run.buffer.content) == len(arg.content):
+                eq = True
+                for cella, cellb in zip(arg.content[1:], run.buffer.content[1:]):
+                    if type(cella) is Loop and type(cellb) is Loop:
+                        continue
+                    if cella != cellb:
+                        eq = False
+                        break
+                if eq: return 
+            run.ipx -= 1
         elif 'CX'.find(op) >= 0:
             if type(arg) is str: run.buffer = arg
             elif type(arg) is Loop: run.buffer = Loop(arg.content[1:], run)
@@ -221,11 +236,21 @@ class Loop(object):
             self.content[self.dpx%len(self.content)] = run.buffer
             run.buffer = None
         elif 'I' == op and intarg is not None:
+            if intarg <= 0:
+                self.buffer = Loop([], run)
+                return 
             s = ''
-            s += raw_input('Requiring {} characters: '.format(intarg))
             while len(s) < intarg:
                 s += raw_input('Requiring {} characters: '.format(intarg))
-            self.buffer = Loop(list(s[:intarg]), run)            
+            self.buffer = Loop(list(s[:intarg]), run)     
+        elif 'I' == op:
+            if type(arg) is str:
+                s = ''
+                while arg not in s:
+                    s += raw_input('Requiring string with {}: '.format(arg))
+                s = s[:s.find(arg)+1]
+            else: s = raw_input('Requiring string: ')
+            self.buffer = Loop(list(s[:intarg]), run)
         elif 'O' == op and run.buffer is not None:
             s = ''
             if type(run.buffer) is Loop:
@@ -235,6 +260,8 @@ class Loop(object):
             run.output += s
             print(s, end='')
             run.buffer = None
+        elif 'Q' == op:
+            pass
         elif '#' == op and type(arg) is Loop:
             run.buffer = Loop(Loop.fromInt(intarg), run)
         elif '#' == op and type(arg) is str:
@@ -248,8 +275,6 @@ class Loop(object):
             except TypeError: pass
         elif '*' == op:
             run.buffer = Loop(Loop.fromInt(intarg * Loop.toInt(run.buffer)), run)
-        '''elif '&' == op and type(arg) is not tuple:
-            run.buffer.contents += [arg.contents[1:]]#'''
         
 
     @staticmethod

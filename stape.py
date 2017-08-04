@@ -6,7 +6,7 @@ tutorial = '''Commands:
       :\texecute one cycle
    INT:\texecute INT cycles
 tFLOAT:\tsets cycle delay to FLOAT seconds; at <0.01 the interpreter does not show intermediate states.
-     r:\texecute number of cycles last specified
+     r:\trestart the program
   mINT:\tsets max number of cycle executed at once (default 1024); cycles are also bounded by 300/delay
      a:\texecutes max number of cycles
      h:\tshow this help screen'''
@@ -52,8 +52,7 @@ def gooey(run, interactive=False):
             input = '0'+input
         except ValueError: pass
         cmd = input[0]
-        if '0' == cmd or 'r' == cmd or 'a' == cmd:
-            if cmd == 'r': input = repeat
+        if '0' == cmd or 'a' == cmd:
             if cmd == 'm': input = maxim
             input = min(int(input), maxim)
             if input != 1: repeat = input
@@ -61,18 +60,36 @@ def gooey(run, interactive=False):
             if delay < 0.01:
                 run.next(input)
                 clear()
-                print('Buffer:', run.buffer)
-                print(run.main)
-            while val > 0 and t > 0:
-                clear()
-                run.next(1)
                 print('Output:', run.output)
                 print('Buffer:', run.buffer)
                 print(run.main)
-                if run.done: break
-                val -= 1
-                t -= delay
-                if val > 0: time.sleep(delay)
+            else:
+                while val > 0 and t > 0:
+                    run.next()
+                    clear()
+                    print('Output:', run.output)
+                    print('Buffer:', run.buffer)
+                    print(run.main)
+                    if run.done: break
+                    val -= 1
+                    t -= delay
+                    if val > 0: time.sleep(delay)
+        elif 'r' == cmd: 
+            run.restart()
+            clear()
+            print('Buffer:', run.buffer)
+            print(run.main)
+        elif 'l' == cmd: 
+            try: 
+                newRun = stapleFromFile(sys.argv[1])
+                if newRun is not None: run = newRun
+            except IndexError:
+                print('No file specified!')
+                continue
+            clear()
+            print('Output:', run.output)
+            print('Buffer:', run.buffer)
+            print(run.main)
         elif 't' == cmd: delay = float(input[1:])
         elif 'm' == cmd: maxim = int(input[1:])
         elif 'h' == cmd: print(tutorial)

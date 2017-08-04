@@ -35,7 +35,7 @@ The Stape tape functions as both data storage and program. Each execution step, 
 
 ### Type Classifications
 
-Operations fail silently if they get a cell which does not conform to its expected type.
+Operations fail silently if they get a cell which does not conform to its expected type, unless it's type specification is marked with a *.
 
 Name | Description
 --- | ---
@@ -62,10 +62,15 @@ Op|Type|Effect|Mnemonic
 `_`|-|move the IP out of the current loop, appearing at the corresponding `[]` in the parent loop|stack
 `{`|Loop|unstaple the operand, adding a `:` at each end|unstapler
 `}`|-|unstaple the current loop, adding a `:` at each end|unstapler
-`@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of stops equal to the operand|tape dispenser
+`&`|-|"flip" the tape around, effectively reversing the direction of all pointers|tape dispenser
+`~`|-|swap the IP and DP's positions|transpose mark
 `%`|Int|set the speed of the DP (in cells/step) to the operand|date
+`@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of stops equal to the operand|tape dispenser
+`L`|Any|move the IP backwards 1 unless the data matches the buffer (essentially, wait until the IP matches the buffer)|clock hands
 `I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer.|"in"
-`O`|Any|write the buffer to stdout, not including the outermost staples and not expanding any sub-loops, and clear the buffer|"out"
+`J`|Char*|as `I`, except read characters until one matches the operand. If the operand is not a char, read to EOF instead.|"in"
+`O`|-|write the buffer to stdout, not including any staples and bit expanding any sub-loops, and clear the buffer|"out"
+`Q`|-|same as `O`, except DO expand sub-loops (print as if the buffer was a single flattened loop)|"out"
 `C`|Any|copy the operand to the buffer|"copy"
 `X`|Any|copy the operand to the buffer and replace it on the tape with `:`|scissors
 `V`|Any|replace the operand with the buffer, and clear the buffer; fails silently if the buffer is empty|XCV
@@ -73,8 +78,7 @@ Op|Type|Effect|Mnemonic
 `#`|Loop|read the operand as an integer and put the nicely-formatted (matching `/-?\d+/`) result  in the buffer|keypad
 `M`|Int|put the operand's corresponding ASCII character into the buffer|"letter"
 `+`|Int|add the operand and the buffer (if the buffer is empty or not an integer, treat it as 0), and put the result in the buffer as a stapled base 10 number|+
-`*`|Int|same as `*`, except with multiplication|\*
-`&`|Loop|Concatenates the argument to the buffer; silently fails if the buffer is not a loop|\*
+`*`|Int|as `+`, except with multiplication|\*
 
 When an operator asks for int and gets a valid character, it treats `0`-`9` as their respective numbers, and `-` as -1. When it asks for an int and gets a loop, all decimal digits inside of the loop are extracted (non-recursively), put in order, interpreted as a number, and then multiplied by -1 to the power of the number of `-`s inside the loop. If there are no digits inside the loop, the result is 0.
 
@@ -94,9 +98,9 @@ becomes
        '
   1 [qrst[0]xyz[1]6789]
                 '
-    1.0 [uvw]
+    0 [uvw]
         '
-    1.1 [012345]
+    1 [012345]
          ^    '
 ```
 For representations of program states in which the IP is in the same spot as a DP, the `"` character is recommended. For representations in which both formatting and monospace are available, it is recommended to use highlighting to represent data pointers, nearly halving the size of the representation. 

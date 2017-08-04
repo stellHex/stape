@@ -1,10 +1,10 @@
-+O:%-::-:C=::
++O:%-:::C=
 [ bottle(s) of beer on the wall, ]
 ::
 [
 	%OCO\	-
 	C:+V:\	[99]
-	_::::\	6
+	_::::\	[6 aka a third of the number of cells in the loop]
 ]
 C=
 [ bottle(s) of beer,\
@@ -13,10 +13,10 @@ Take one down, pass it around, ]
 [
 	%OCO\	-
 	C:+V:\	[98]
-	_::::\	6
+	_::::\	[6 aka a third of the number of cells in the loop]
 ]
 :::CO:%C+::
 [ bottle(s) of beer on the wall!\
 \
 ]
-:::%V::%6::3::[99]
+:::%V::%:::6::3::[99]
