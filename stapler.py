@@ -23,14 +23,16 @@ class StapeRun(object):
             [r'\\\[', '['],        #escape [
             [r'\\]', ']'],         #escape ]
             [r'^','\n'],           #start ignoring leading whitespace
-            [r'(?<=\n)\s+', ''],   #finish ignoring leading whitespace
-            [r'\\\n', u'¶'],       #start escaping newlines
+            [r'(?<=\n)\s+', ''],             #finish ignoring leading whitespace
+            [r'(?<=\n)\\(?=\s)(?!\n)', ''],  #escape leading whitespace
+            [r'\\\n', u'¶'],                 #start escaping newlines
             [r'\n', ''],           #ignore newlines
             [r'\\.', ''],          #ignore other escaped characters
             [u'∖', r'\\'],         #finish escaping \
             [u'¶', '\n'],          #finish escaping newlines
         ]: 
-            try: self.miniprogram = re.sub(reg, rep, self.miniprogram)
+            try: 
+                self.miniprogram = re.sub(reg, rep, self.miniprogram)
             except: print(reg, rep, j)
             j+=1
 

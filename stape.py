@@ -43,59 +43,63 @@ def gooey(run, interactive=False):
     print(run.main)
     print(tutorial)
     while True:
-      try:
-        input = raw_input('[]> ').strip()
-        if 'q'.lower() in input: break
-        if not input: input = '1'
-        try:
-            int(input)
-            input = '0'+input
-        except ValueError: pass
-        cmd = input[0]
-        if '0' == cmd or 'a' == cmd:
-            if cmd == 'm': input = maxim
-            input = min(int(input), maxim)
-            if input != 1: repeat = input
-            val, t = input,300
-            if delay < 0.01:
-                run.next(input)
-                clear()
-                print('Output:', run.output)
-                print('Buffer:', run.buffer)
-                print(run.main)
-            else:
-                while val > 0 and t > 0:
-                    run.next()
+        inp = raw_input('[]> ').strip()
+        for input in inp.split(' '):
+            try:
+                if not input: input = '1'
+                try:
+                    int(input)
+                    input = '0'+input
+                except ValueError: pass
+                cmd = input[0]
+                if '0' == cmd or 'a' == cmd:
+                    if cmd == 'm': input = maxim
+                    input = min(int(input), maxim)
+                    if input != 1: repeat = input
+                    val, t = input,300
+                    if delay < 0.01:
+                        run.next(input)
+                        clear()
+                        print('Output: ', run.output)
+                        print('Buffer: ', run.buffer)
+                        print(run.main)
+                    else:
+                        while val > 0 and t > 0:
+                            run.next()
+                            clear()
+                            print('Output: ', run.output)
+                            print('Buffer: ', run.buffer)
+                            print(run.main)
+                            if run.done: break
+                            val -= 1
+                            t -= delay
+                            if val > 0: time.sleep(delay)
+                elif 'r' == cmd: 
+                    run.restart()
+                    clear()
+                    print('Output: ', run.output)
+                    print('Buffer: ', run.buffer)
+                    print(run.main)
+                elif 'l' == cmd: 
+                    try: 
+                        newRun = stapleFromFile(sys.argv[1])
+                        if newRun is not None: run = newRun
+                    except IndexError:
+                        print('No file specified!')
+                        continue
                     clear()
                     print('Output:', run.output)
                     print('Buffer:', run.buffer)
                     print(run.main)
-                    if run.done: break
-                    val -= 1
-                    t -= delay
-                    if val > 0: time.sleep(delay)
-        elif 'r' == cmd: 
-            run.restart()
-            clear()
-            print('Buffer:', run.buffer)
-            print(run.main)
-        elif 'l' == cmd: 
-            try: 
-                newRun = stapleFromFile(sys.argv[1])
-                if newRun is not None: run = newRun
-            except IndexError:
-                print('No file specified!')
-                continue
-            clear()
-            print('Output:', run.output)
-            print('Buffer:', run.buffer)
-            print(run.main)
-        elif 't' == cmd: delay = float(input[1:])
-        elif 'm' == cmd: maxim = int(input[1:])
-        elif 'h' == cmd: print(tutorial)
-        else: print('Huh?')
-        if run.done: break
-      except ValueError: print('I don\'t think that\'s a number.')
+                elif 't' == cmd: delay = float(input[1:])
+                elif 'm' == cmd: maxim = int(input[1:])
+                elif 'h' == cmd: print(tutorial)
+                elif 'q' not in input: 
+                    print('Whats "{}"?'.format(cmd))
+                    break
+                if run.done: break
+            except ValueError: print('I don\'t think that\'s a number.')
+        if 'q' in inp: break
 
 theRun = None
 def stapleFromFile(path):

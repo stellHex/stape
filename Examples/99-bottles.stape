@@ -1,5 +1,7 @@
 +O:%-::-:C=::
-[ bottle(s) of beer on the wall, ]
+[
+	\ bottle(s) of beer on the wall, 
+]
 ::
 [
 	%OCO\	-
@@ -7,8 +9,10 @@
 	_::::\	6
 ]
 C=
-[ bottle(s) of beer,\
-Take one down, pass it around, ]
+[
+	\ bottle(s) of beer,\
+	Take one down, pass it around, 
+]
 ::
 [
 	%OCO\	-
@@ -16,7 +20,8 @@ Take one down, pass it around, ]
 	_::::\	6
 ]
 :::CO:%C+::
-[ bottle(s) of beer on the wall!\
-\
+[
+	\ bottle(s) of beer on the wall!\
+	\
 ]
 :::%V::%6::3::[99]
