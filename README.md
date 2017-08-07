@@ -65,10 +65,10 @@ Op|Type|Effect|Mnemonic
 `&`|-|"flip" the tape around, effectively reversing the direction of all pointers|tape dispenser
 `~`|-|swap the IP and DP's positions|transpose mark
 `%`|Int|set the speed of the DP (in cells/step) to the operand|date
-`@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of stops equal to the operand|tape dispenser
-`L`|Any|move the IP backwards 1 unless the data matches the buffer (essentially, wait until the IP matches the buffer)|clock hands
+`@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of steps equal to the operand|tape dispenser
+`L`|Any|move the IP backwards 1 unless the operand matches the buffer (essentially, wait until the DP matches the buffer)|clock hands
 `I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer. Reads nothing and puts and empty loop in the buffer if the operand is <= 0|"in"
-`J`|Char*|as `I`, except read characters until one matches the operand. If the operand is not a char, read to EOF instead.|"in"
+`J`|Char\*|as `I`, except read characters until one matches the operand. If the operand is not a char, read to EOF instead.|"in"
 `O`|-|write the buffer to stdout, not including any staples and bit expanding any sub-loops, and clear the buffer|"out"
 `Q`|-|same as `O`, except DO expand sub-loops (print as if the buffer was a single flattened loop)|"out"
 `C`|Any|copy the operand to the buffer|"copy"
