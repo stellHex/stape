@@ -216,7 +216,9 @@ class Loop(object):
         elif '~' == op:
             self.dpx, run.ipx = run.ipx, self.dpx
         elif 'L' == op:
-            if arg == run.buffer: return
+            if arg == run.buffer or self.ipx == run.dpx: 
+                run.buffer = None
+                return
             if type(run.buffer) is Loop and type(arg) is Loop and len(run.buffer.content) == len(arg.content):
                 eq = True
                 for cella, cellb in zip(arg.content[1:], run.buffer.content[1:]):
@@ -225,8 +227,37 @@ class Loop(object):
                     if cella != cellb:
                         eq = False
                         break
-                if eq: return 
+                if eq: 
+                    run.buffer = None
+                    return 
             run.ipx -= 1
+            '''
+            searchloop = self.content[self.dpx+1:]+self.content[:self.dpx+1]
+            if type(run.buffer) is str:
+                for i, val in enumerate(searchloop):
+                    if val == run.buffer:
+                        this.dpx = i + self.dpx + 1
+                        this.buffer = None
+                        return
+            elif type(run.buffer) is Loop:
+                for i, val in enumerate(searchloop):
+                    if type(val) is Loop and len(run.buffer.content) == len(val.content):
+                        eq = True
+                        for cella, cellb in zip(val.content[1:], run.buffer.content[1:]):
+                            if type(cella) is Loop and type(cellb) is Loop:
+                                continue
+                            if cella != cellb:
+                                eq = False
+                                break
+                        if eq: 
+                            run.buffer = None
+                            this.dpx = i + self.dpx + 1
+                            return
+            '''
+        elif 'H' == op:
+            self.dpx = run.ipx
+        elif 'F' == op:
+            run.ipx = self.dpx
         elif 'CX'.find(op) >= 0:
             if type(arg) is str: run.buffer = arg
             elif type(arg) is Loop: run.buffer = Loop(arg.content[1:], run)

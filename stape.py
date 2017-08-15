@@ -28,7 +28,7 @@ def clear():
 
 def gooey(run, interactive=False):
     if not interactive:
-        cycles = 512
+        cycles = 16384
         run.next(cycles)
         while(True):
             run.next(cycles)

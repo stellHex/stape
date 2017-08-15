@@ -1,6 +1,8 @@
 # Stape
 
-An office-supplies-based esoteric programming language.
+An office-supplies-based esoteric programming language. The main design goal of Stape is to be difficult to use in new and interesting ways; the limited ability to move data from place to place leaves the programmer feeling as if they were trying to physically juggle the tape, reams of spare tape, a pen, and a stapler without losing their place.
+
+The interpreter is written in Python 2, and can be run via `python stape.py path/to/file.stape` or simply `python stape.py path/to/file`. If Python is run in interactive mode with `-i`, then a debugger/visualizer mode with a basic command-line interface will open.
 
 ## Structure
 
@@ -66,7 +68,9 @@ Op|Type|Effect|Mnemonic
 `~`|-|swap the IP and DP's positions|transpose mark
 `%`|Int|set the speed of the DP (in cells/step) to the operand|date
 `@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of steps equal to the operand|tape dispenser
-`L`|Any|move the IP backwards 1 unless the operand matches the buffer (essentially, wait until the DP matches the buffer)|clock hands
+`L`|Any|move the IP backwards 1 unless the operand (non-recursively) matches the buffer OR DP = IP, in which case clear the buffer (essentially, wait until the DP matches the buffer)|clock hands
+`H`|-|move the DP to the IP|filing cabinet
+`F`|-|move the IP to the IP|filing cabinet
 `I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer. Reads nothing and puts and empty loop in the buffer if the operand is <= 0|"in"
 `J`|Char\*|as `I`, except read characters until one matches the operand. If the operand is not a char, read to EOF instead.|"in"
 `O`|-|write the buffer to stdout, not including any staples and bit expanding any sub-loops, and clear the buffer|"out"

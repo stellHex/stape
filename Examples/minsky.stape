@@ -1,0 +1,20 @@
+[
+	Comments are easy to add in Stape -- just make a loop that doesn't do anything!\
+\	This is the stuttering beginnings of an attempt to implement the following Minsky machine:\
+\	1: DECREMENT [REGISTER_B] JZ 4 JNZ 2\
+\	2: DECREMENT [REGISTER_A] JZ 3 JNZ 1\
+\	3: INCREMENT [REGISTER_B] J  4\
+\	4: HALT\
+\	in a general way, thereby proving Stape is Turing Complete\
+\	This particular machine was taken from goodmath.blogspot.com/2006/05/minsky-machine.html
+]
+
+[REG_A]HCLC
+[
+	L
+	[0]
+]
+H
+
+11-[42][REG_A]-
+11-[17][REG_B]-
