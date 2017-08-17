@@ -6,7 +6,7 @@ The interpreter is written in Python 2, and can be run via `python stape.py path
 
 ## Structure
 
-A running Stape program consists of a tape, an instruction pointer (IP), some number of days pointers (DPs), and a buffer. The tape is a looping tape of cells, initialized by the program. The IP moves along it, auto-incrementing each instruction step. DPs also move along the tape, but only one of them is active at a time, and it can move in either direction at a program-defined speed, although by default they auto-decrement (inactive DPs remember their speed). The buffer is a transient floating memory cell, of the same type as those on the tape.
+A running Stape program consists of a tape, an instruction pointer (IP), some number of data pointers (DPs), and a buffer. The tape is a looping tape of cells, initialized by the program. The IP moves along it, auto-incrementing each instruction step. DPs also move along the tape, but only one of them is active at a time, and it can move in either direction at a program-defined speed, although by default they auto-decrement (inactive DPs remember their speed). The buffer is a transient floating memory cell, of the same type as those on the tape.
 
 ### Staples
 
@@ -22,7 +22,7 @@ Stape's tape emulates a real, if unusually resilient, strip of paper, in that it
 ```
 If a pointer at spot A moves rightwards along the tape, it can't pass the staples (`[]`), and will treat the loop as if it were a single cell (even though it looks like 2 in the diagram, and in programs). If a pointer at spot B moves to the right, it can't pass the staples (`][`), and will end up passing over the cell of the staples and repeating what it just did--so the "loops of paper" also serve as actual loops for control flow. The loops never "go the other way"; that would waste staples, and interpreters who waste staples lose stapler privileges.
 
-Every stapled loop has exactly one DP. The active DP is the one in the same loop as the IP, and it only moves when the DP moves. When a loop is stapled, its DP is created at its `][` cell. When a loop is unstapled, its DP is destroyed.
+Every stapled loop has exactly one DP. The active DP is the one in the same loop as the IP, and it only moves when the IP moves. When a loop is stapled, its DP is created at its `][` cell. When a loop is unstapled, its DP is destroyed.
 
 
 ### Program
@@ -70,7 +70,7 @@ Op|Type|Effect|Mnemonic
 `@`|Int|"roll" the current loop backwards by moving the IP and DP forwards, a number of steps equal to the operand|tape dispenser
 `L`|Any|move the IP backwards 1 unless the operand (non-recursively) matches the buffer OR DP = IP, in which case clear the buffer (essentially, wait until the DP matches the buffer)|clock hands
 `H`|-|move the DP to the IP|filing cabinet
-`F`|-|move the IP to the IP|filing cabinet
+`F`|-|move the IP to the DP|filing cabinet
 `I`|Int|read a number of characters equal to the twice the operand and staple them into a loop which goes in the buffer. Reads nothing and puts and empty loop in the buffer if the operand is <= 0|"in"
 `J`|Char\*|as `I`, except read characters until one matches the operand. If the operand is not a char, read to EOF instead.|"in"
 `O`|-|write the buffer to stdout, not including any staples and bit expanding any sub-loops, and clear the buffer|"out"
